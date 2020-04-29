@@ -49,7 +49,6 @@ if __name__ == '__main__':
         for line in io.TextIOWrapper(p.stderr):
             result[i].append(line)
         print(f'Counters for iteration {i} collected', file=sys.stderr)
-        i += 1
 
     def add_extra_column(list_of_lists, extra_column_tuple):
         return [lst.append(extra_column_tuple) for lst in list_of_lists]
