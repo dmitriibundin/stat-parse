@@ -31,7 +31,7 @@ if __name__ == '__main__':
     run_options=argparse.ArgumentParser('Run configuration')
     run_options.add_argument('--run-count', type=parse_run_count, help='Number of iteration to run a supplied command', default=1)
     run_options.add_argument('--output', type=str, help='File path to write data to')
-    run_options.add_argument('--extra-columns', type=parse_extra_columns, help='Extra columns with a specific value to append to the result: K:V[,K:V]')
+    run_options.add_argument('--extra-columns', type=parse_extra_columns, default=[], help='Extra columns with a specific value to append to the result: K:V[,K:V]')
     run_options.add_argument(nargs=argparse.REMAINDER, dest='command')
     try:
         args=run_options.parse_args(sys.argv[1:])
@@ -43,12 +43,24 @@ if __name__ == '__main__':
     extra_columns=args.extra_columns
     output_path=args.output
 
+
+#    lst1=[('k1', 'v1'), ('k2','v2'), ('k3', 'v3')]
+#    lst2=[('k1', 'v1'), ('k2','v2'), ('k4', 'v4')]
+#    lst3=[('k0', 'v0'), ('k2','v2'), ('k4', 'v4')]
+#
+#    data=[lst1, lst2, lst3]
+#
+#    print(parser.get_stat_schema(data))
+
     result = [[] for _ in range(iteration_count)]
-    for i in range(0, iteration_count):
+    for i in range(iteration_count):
         p = subprocess.Popen(args.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         for line in io.TextIOWrapper(p.stderr):
             result[i].append(line)
-        print(f'Counters for iteration {i} collected', file=sys.stderr)
+        if not result[i]:
+            print(f'Encountered empty stderr for iteration {i}. Is data writing to stdout?', file=sys.stderr)
+        else:
+            print(f'Counters for iteration {i} collected', file=sys.stderr)
 
     def add_extra_column(list_of_lists, extra_column_tuple):
         return [lst.append(extra_column_tuple) for lst in list_of_lists]

@@ -13,4 +13,8 @@ def parse_perf_stat_csv(data):
     return result
 
 def get_stat_schema(stats):
-    return list(OrderedDict.fromkeys([perf_event_name for stat in stats for perf_event_name, perf_counter_value in stat]))
+    return list(
+            OrderedDict.fromkeys(
+                [perf_event_name for stat in stats for perf_event_name, perf_counter_value in stat]
+                )
+            )
